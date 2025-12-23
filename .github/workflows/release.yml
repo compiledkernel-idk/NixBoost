@@ -32,8 +32,6 @@ jobs:
           # Result is a symlink called ./result
           BIN=./result/bin/nixboost
 
-          chmod +x "$BIN"
-
           OUT=nixboost-x86_64-linux
           cp "$BIN" "$OUT"
 
