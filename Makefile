@@ -1,0 +1,24 @@
+# nixboost Makefile
+
+PREFIX ?= /usr/local
+BINDIR ?= $(PREFIX)/bin
+
+.PHONY: all build install clean
+
+all: build
+
+build:
+	@echo ":: building kdownload..."
+	@cd kdownload && cargo build --release --locked
+	@echo ":: building nixboost..."
+	@cargo build --release --locked
+
+install: build
+	@echo ":: installing to $(BINDIR)..."
+	@install -Dm755 kdownload/target/release/kdownload $(DESTDIR)$(BINDIR)/kdownload
+	@install -Dm755 target/release/nixboost $(DESTDIR)$(BINDIR)/nixboost
+	@echo ":: installation complete."
+
+clean:
+	@cargo clean
+	@cd kdownload && cargo clean

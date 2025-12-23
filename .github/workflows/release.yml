@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and Release (NixOS)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v12
+
+      - name: Enable flakes
+        run: |
+          mkdir -p ~/.config/nix
+          echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+
+      - name: Build with Nix
+        run: |
+          nix build .#packages.x86_64-linux.default
+
+          # Result is a symlink called ./result
+          BIN=./result/bin/nixboost
+
+          chmod +x "$BIN"
+
+          OUT=nixboost-x86_64-linux
+          cp "$BIN" "$OUT"
+
+          tar -czf "$OUT.tar.gz" "$OUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            nixboost-x86_64-linux
+            nixboost-x86_64-linux.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
