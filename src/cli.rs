@@ -1,6 +1,6 @@
 use clap::Parser;
 
-pub const VERSION: &str = "1.0.8";
+pub const VERSION: &str = "1.0.9";
 
 #[derive(Parser)]
 #[command(name = "nixboost")]

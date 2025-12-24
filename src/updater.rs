@@ -1,7 +1,5 @@
 use serde::Deserialize;
 use console::style;
-use std::fs;
-use std::io::{self, Write};
 use anyhow::Result;
 use std::process::Command;
 
