@@ -14,7 +14,7 @@
       {
         packages.default = pkgs.rustPlatform.buildRustPackage {
           pname = "nixboost";
-          version = "1.0.3";
+          version = "1.0.4";
 
           src = ./.;
 
