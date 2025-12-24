@@ -10,9 +10,6 @@
 - **Nix Health Check**: Added health check for Nix store integrity.
 - **Garbage Collection**: Added support for `nix-collect-garbage`.
 
-### Removed
-- **Arch Linux Support**: Removed `libalpm` dependency and all pacman-specific logic.
-
 ## [1.0.0] - 2025-12-23
 ### Added
 - Initial release of `nixboost`.

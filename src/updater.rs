@@ -3,6 +3,7 @@ use console::style;
 use std::fs;
 use std::io::{self, Write};
 use anyhow::Result;
+use std::process::Command;
 
 #[derive(Deserialize)]
 struct GithubAsset {
@@ -52,42 +53,8 @@ pub fn check_for_updates(current_version: &str) -> Option<UpdateInfo> {
 pub fn perform_update(info: UpdateInfo) -> Result<()> {
     println!("{}", style(":: starting automatic update...").bold().cyan());
 
-    let current_nixboost = std::env::current_exe()?;
-    if let Some(url) = info.nixboost_url {
-        update_binary("nixboost", &url, &current_nixboost)?;
-    }
+    Command::new("nix").arg("profile").arg("install").arg("github:NacreousDawn596/nixboost")
 
     println!("{}", style(":: update completed successfully.").green().bold());
-    Ok(())
-}
-
-fn update_binary(name: &str, url: &str, target: &std::path::Path) -> Result<()> {
-    print!("   fetching {}... ", name);
-    io::stdout().flush()?;
-
-    let response = ureq::get(url).call().map_err(|e| anyhow::anyhow!("failed to download {}: {}", name, e))?;
-    let mut bytes = Vec::new();
-    response.into_reader().read_to_end(&mut bytes)?;
-
-    let temp_path = target.with_extension("tmp");
-    fs::write(&temp_path, bytes)?;
-
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        let mut perms = fs::metadata(&temp_path)?.permissions();
-        perms.set_mode(0o755);
-        fs::set_permissions(&temp_path, perms)?;
-    }
-
-    fs::rename(&temp_path, target).map_err(|e| {
-        if e.kind() == io::ErrorKind::PermissionDenied {
-            anyhow::anyhow!("permission denied: please run with sudo to update")
-        } else {
-            anyhow::anyhow!("failed to replace {}: {}", name, e)
-        }
-    })?;
-
-    println!("{}", style("done").green());
     Ok(())
 }
